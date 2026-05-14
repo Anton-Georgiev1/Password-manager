@@ -29,6 +29,17 @@ def test_data_manager_crud(crypto_manager: CryptoManager) -> None:
     dm3 = DataManager(crypto_manager)
     assert len(dm3.credentials) == 0
 
+def test_data_manager_update(crypto_manager: CryptoManager) -> None:
+    dm = DataManager(crypto_manager)
+    dm.add_credential("test.com", "user", "pass")
+    
+    dm.update_credential(0, "new.com", "new_user", "new_pass")
+    assert dm.credentials[0]["website"] == "new.com"
+    
+    # Verify persistence
+    dm2 = DataManager(crypto_manager)
+    assert dm2.credentials[0]["website"] == "new.com"
+
 @pytest.fixture(autouse=True)
 def cleanup_files() -> None:
     files = [Path("data.enc"), Path("salt.key"), Path("data.tmp")]
