@@ -6,7 +6,8 @@ from cryptography.fernet import InvalidToken
 
 def test_encryption_decryption() -> None:
     password = "master_password"
-    manager = CryptoManager(password)
+    salt = CryptoManager.generate_salt()
+    manager = CryptoManager(password, salt)
     original_text = "secret_data"
     
     encrypted = manager.encrypt(original_text)
@@ -17,18 +18,10 @@ def test_encryption_decryption() -> None:
 
 def test_wrong_password_fails() -> None:
     password = "correct_password"
-    manager = CryptoManager(password)
+    salt = CryptoManager.generate_salt()
+    manager = CryptoManager(password, salt)
     encrypted = manager.encrypt("secret")
     
-    wrong_manager = CryptoManager("wrong_password")
+    wrong_manager = CryptoManager("wrong_password", salt)
     with pytest.raises(InvalidToken):
         wrong_manager.decrypt(encrypted)
-
-@pytest.fixture(autouse=True)
-def cleanup_salt() -> None:
-    salt_file = Path("salt.key")
-    if salt_file.exists():
-        os.remove(salt_file)
-    yield
-    if salt_file.exists():
-        os.remove(salt_file)
