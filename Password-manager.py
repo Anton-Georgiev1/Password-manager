@@ -95,18 +95,13 @@ class PasswordManagerApp(ctk.CTk):
             return
 
         try:
-            self.crypto = CryptoManager(password)
-            self.data_manager = DataManager(self.crypto)
+            # DataManager now handles crypto and salt loading internally
+            self.data_manager = DataManager(password)
             
-            if self.data_manager.DATA_FILE.exists():
-                try:
-                    self.crypto.decrypt(self.data_manager.DATA_FILE.read_bytes())
-                except Exception:
-                    messagebox.showerror("Error", "Incorrect Master Password.")
-                    return
-
             self.login_frame.destroy()
             self._setup_main_ui()
+        except ValueError:
+            messagebox.showerror("Error", "Incorrect Master Password.")
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {e}")
 
