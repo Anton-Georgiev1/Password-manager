@@ -57,3 +57,13 @@ class DataManager:
         if 0 <= index < len(self.credentials):
             self.credentials.pop(index)
             self.save_data()
+
+    def update_credential(self, index: int, website: str, username: str, password: str) -> None:
+        """Updates an existing credential by index and saves."""
+        if 0 <= index < len(self.credentials):
+            self.credentials[index] = {
+                "website": website,
+                "username": username,
+                "password": password
+            }
+            self.save_data()
