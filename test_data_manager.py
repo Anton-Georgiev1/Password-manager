@@ -1,15 +1,11 @@
 import pytest
 import os
 from pathlib import Path
-from crypto_manager import CryptoManager
 from data_manager import DataManager
 
-@pytest.fixture
-def crypto_manager() -> CryptoManager:
-    return CryptoManager("test_password")
-
-def test_data_manager_crud(crypto_manager: CryptoManager) -> None:
-    dm = DataManager(crypto_manager)
+def test_data_manager_crud() -> None:
+    password = "test_password"
+    dm = DataManager(password)
     
     # Test Add
     dm.add_credential("google.com", "user1", "pass1")
@@ -17,28 +13,25 @@ def test_data_manager_crud(crypto_manager: CryptoManager) -> None:
     assert dm.credentials[0]["website"] == "google.com"
     
     # Test persistence (load in a new manager)
-    dm2 = DataManager(crypto_manager)
+    dm2 = DataManager(password)
     assert len(dm2.credentials) == 1
     assert dm2.credentials[0]["username"] == "user1"
     
+    # Test Update
+    dm.update_credential(0, "new.com", "new_user", "new_pass")
+    assert dm.credentials[0]["website"] == "new.com"
+    
+    # Verify persistence of update
+    dm3 = DataManager(password)
+    assert dm3.credentials[0]["website"] == "new.com"
+
     # Test Remove
     dm.remove_credential(0)
     assert len(dm.credentials) == 0
     
     # Test persistence of removal
-    dm3 = DataManager(crypto_manager)
-    assert len(dm3.credentials) == 0
-
-def test_data_manager_update(crypto_manager: CryptoManager) -> None:
-    dm = DataManager(crypto_manager)
-    dm.add_credential("test.com", "user", "pass")
-    
-    dm.update_credential(0, "new.com", "new_user", "new_pass")
-    assert dm.credentials[0]["website"] == "new.com"
-    
-    # Verify persistence
-    dm2 = DataManager(crypto_manager)
-    assert dm2.credentials[0]["website"] == "new.com"
+    dm4 = DataManager(password)
+    assert len(dm4.credentials) == 0
 
 @pytest.fixture(autouse=True)
 def cleanup_files() -> None:
