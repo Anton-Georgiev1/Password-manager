@@ -10,6 +10,7 @@ class PasswordSettings:
     use_lower: bool = True
     use_digits: bool = True
     use_special: bool = True
+    custom_symbols: str = ""
 
 class PasswordGenerator:
     """Secure password generator."""
@@ -40,6 +41,12 @@ class PasswordGenerator:
             chars += string.digits
         if settings.use_special:
             chars += string.punctuation
+        
+        if settings.custom_symbols:
+            # Add custom symbols, avoiding duplicates if some were already added by use_special
+            for char in settings.custom_symbols:
+                if char not in chars:
+                    chars += char
 
         if not chars:
             raise ValueError("At least one character type must be selected.")
