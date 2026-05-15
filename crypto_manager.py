@@ -29,6 +29,13 @@ class CryptoManager:
         )
         return base64.urlsafe_b64encode(kdf.derive(password.encode()))
 
+    @staticmethod
+    def hash_text(text: str) -> str:
+        """Hashes a string using SHA-256."""
+        digest = hashes.Hash(hashes.SHA256())
+        digest.update(text.encode())
+        return digest.finalize().hex()
+
     def encrypt(self, data: str) -> bytes:
         """Encrypts a string and returns bytes."""
         return self.fernet.encrypt(data.encode())
