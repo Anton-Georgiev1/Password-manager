@@ -87,96 +87,140 @@ class PasswordManagerApp(ctk.CTk):
         self._show_login()
 
     def _show_login(self) -> None:
-        """Displays the login screen with tabs for Login, Change, and Recovery."""
+        """Displays a simplified, vertical login screen."""
         self.login_container = ctk.CTkFrame(self)
         self.login_container.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
         self.login_container.grid_columnconfigure(0, weight=1)
-        self.login_container.grid_rowconfigure(0, weight=1)
-
-        self.login_tabs = ctk.CTkTabview(self.login_container)
-        self.login_tabs.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
         
-        self.login_tabs.add("Login")
-        self.login_tabs.add("Change Password")
-        self.login_tabs.add("Recover Account")
-
-        self._setup_login_tab_ui()
-        self._setup_change_tab_ui()
-        self._setup_recover_tab_ui()
-
-    def _setup_login_tab_ui(self) -> None:
-        tab = self.login_tabs.tab("Login")
-        tab.grid_columnconfigure(0, weight=1)
+        # --- Main Login Section ---
+        ctk.CTkLabel(self.login_container, text="Secure Vault", font=ctk.CTkFont(size=24, weight="bold")).grid(row=0, column=0, pady=(20, 10))
         
-        ctk.CTkLabel(tab, text="Secure Vault", font=ctk.CTkFont(size=24, weight="bold")).grid(row=0, column=0, pady=20)
+        self.pass_frame = ctk.CTkFrame(self.login_container, fg_color="transparent")
+        self.pass_frame.grid(row=1, column=0, pady=5)
         
-        self.master_pass_entry = ctk.CTkEntry(tab, placeholder_text="Master Password", show="*", width=300)
-        self.master_pass_entry.grid(row=1, column=0, pady=(10, 0))
+        self.master_pass_entry = ctk.CTkEntry(self.pass_frame, placeholder_text="Master Password", show="*", width=260)
+        self.master_pass_entry.pack(side="left")
+        
+        self.show_pass_btn = ctk.CTkButton(self.pass_frame, text="👁", width=30, command=self._toggle_main_pass)
+        self.show_pass_btn.pack(side="left", padx=5)
+        
+        self.login_caps_warn = ctk.CTkLabel(self.login_container, text="⚠️ Caps Lock is ON", text_color="orange")
+        self.login_lang_warn = ctk.CTkLabel(self.login_container, text="Please switch keyboard to English layout", text_color="red")
+        
         self.master_pass_entry.bind("<Return>", lambda e: self._handle_login())
-        
-        self.login_caps_warn = ctk.CTkLabel(tab, text="⚠️ Caps Lock is ON", text_color="orange")
-        self.login_lang_warn = ctk.CTkLabel(tab, text="Please switch keyboard to English layout", text_color="red")
-        
         self.master_pass_entry.bind("<KeyRelease>", lambda e: self._check_indicators(self.master_pass_entry, self.login_caps_warn, self.login_lang_warn))
         self.master_pass_entry.bind("<FocusIn>", lambda e: self._check_indicators(self.master_pass_entry, self.login_caps_warn, self.login_lang_warn))
 
-        self.login_show_pass_var = tk.BooleanVar(value=False)
-        ctk.CTkCheckBox(tab, text="Show Password", variable=self.login_show_pass_var, 
-                        command=lambda: self._toggle_visibility(self.master_pass_entry, self.login_show_pass_var)).grid(row=4, column=0, pady=5)
+        self.login_btn = ctk.CTkButton(self.login_container, text="Login", command=self._handle_login, width=300, height=40, font=ctk.CTkFont(weight="bold"))
+        self.login_btn.grid(row=4, column=0, pady=(20, 10))
 
-        ctk.CTkButton(tab, text="Login", command=self._handle_login, width=200).grid(row=5, column=0, pady=20)
+        # --- Sub-options Section ---
+        self.change_btn = ctk.CTkButton(self.login_container, text="Change Master Password", command=self._show_change_dialog, fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"))
+        self.change_btn.grid(row=5, column=0, pady=2)
 
-    def _setup_change_tab_ui(self) -> None:
-        tab = self.login_tabs.tab("Change Password")
-        tab.grid_columnconfigure(0, weight=1)
+        self.recover_btn = ctk.CTkButton(self.login_container, text="Recover Account", command=self._show_recover_dialog, fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"))
+        self.recover_btn.grid(row=6, column=0, pady=2)
 
-        ctk.CTkLabel(tab, text="Update Master Password", font=ctk.CTkFont(size=20, weight="bold")).grid(row=0, column=0, pady=10)
+    def _toggle_main_pass(self) -> None:
+        if self.master_pass_entry.cget("show") == "*":
+            self.master_pass_entry.configure(show="")
+            self.show_pass_btn.configure(text="🔒")
+        else:
+            self.master_pass_entry.configure(show="*")
+            self.show_pass_btn.configure(text="👁")
 
-        self.login_curr_pass = ctk.CTkEntry(tab, placeholder_text="Current Password", show="*", width=300)
-        self.login_curr_pass.grid(row=1, column=0, pady=5)
+    def _show_change_dialog(self) -> None:
+        """Opens a dialog for changing the master password."""
+        dialog = ctk.CTkToplevel(self)
+        dialog.title("Change Master Password")
+        dialog.geometry("400x450")
+        dialog.resizable(False, False)
+        dialog.grid_columnconfigure(0, weight=1)
 
-        self.login_new_pass = ctk.CTkEntry(tab, placeholder_text="New Password", show="*", width=300)
-        self.login_new_pass.grid(row=2, column=0, pady=5)
+        ctk.CTkLabel(dialog, text="Update Master Password", font=ctk.CTkFont(size=18, weight="bold")).grid(row=0, column=0, pady=20)
 
-        self.login_confirm_pass = ctk.CTkEntry(tab, placeholder_text="Confirm New Password", show="*", width=300)
-        self.login_confirm_pass.grid(row=3, column=0, pady=5)
+        curr_entry = ctk.CTkEntry(dialog, placeholder_text="Current Password", show="*", width=300)
+        curr_entry.grid(row=1, column=0, pady=10)
+        
+        new_entry = ctk.CTkEntry(dialog, placeholder_text="New Password", show="*", width=300)
+        new_entry.grid(row=2, column=0, pady=10)
+        
+        conf_entry = ctk.CTkEntry(dialog, placeholder_text="Confirm New Password", show="*", width=300)
+        conf_entry.grid(row=3, column=0, pady=10)
 
-        self.change_caps_warn = ctk.CTkLabel(tab, text="⚠️ Caps Lock is ON", text_color="orange")
-        self.change_lang_warn = ctk.CTkLabel(tab, text="Please switch keyboard to English layout", text_color="red")
+        caps_warn = ctk.CTkLabel(dialog, text="⚠️ Caps Lock is ON", text_color="orange")
+        lang_warn = ctk.CTkLabel(dialog, text="Please switch keyboard to English layout", text_color="red")
 
-        for entry in [self.login_curr_pass, self.login_new_pass, self.login_confirm_pass]:
-            entry.bind("<KeyRelease>", lambda e, en=entry: self._check_indicators(en, self.change_caps_warn, self.change_lang_warn))
-            entry.bind("<FocusIn>", lambda e, en=entry: self._check_indicators(en, self.change_caps_warn, self.change_lang_warn))
+        for en in [curr_entry, new_entry, conf_entry]:
+            en.bind("<KeyRelease>", lambda e, entry=en: self._check_indicators(entry, caps_warn, lang_warn))
+            en.bind("<FocusIn>", lambda e, entry=en: self._check_indicators(entry, caps_warn, lang_warn))
 
-        self.change_show_pass_var = tk.BooleanVar(value=False)
-        ctk.CTkCheckBox(tab, text="Show Passwords", variable=self.change_show_pass_var, 
-                        command=lambda: self._toggle_multi_visibility([self.login_curr_pass, self.login_new_pass, self.login_confirm_pass], self.change_show_pass_var)).grid(row=6, column=0, pady=5)
+        show_var = tk.BooleanVar(value=False)
+        ctk.CTkCheckBox(dialog, text="Show Passwords", variable=show_var, 
+                        command=lambda: self._toggle_multi_visibility([curr_entry, new_entry, conf_entry], show_var)).grid(row=6, column=0, pady=10)
 
-        ctk.CTkButton(tab, text="Change & Update Key", command=self._handle_login_screen_change, width=200).grid(row=7, column=0, pady=10)
+        def perform_change():
+            if not all([curr_entry.get(), new_entry.get(), conf_entry.get()]):
+                messagebox.showwarning("Warning", "All fields required.")
+                return
+            if new_entry.get() != conf_entry.get():
+                messagebox.showerror("Error", "Passwords do not match.")
+                return
+            try:
+                self.data_manager = DataManager(curr_entry.get())
+                self.data_manager.change_password(new_entry.get())
+                dialog.destroy()
+                self._setup_recovery_flow(reset_login=True)
+            except ValueError:
+                messagebox.showerror("Error", "Incorrect current password.")
 
-    def _setup_recover_tab_ui(self) -> None:
-        tab = self.login_tabs.tab("Recover Account")
-        tab.grid_columnconfigure(0, weight=1)
+        ctk.CTkButton(dialog, text="Update & Generate Key", command=perform_change, width=200).grid(row=7, column=0, pady=20)
+        dialog.after(100, dialog.lift); dialog.focus(); dialog.grab_set()
 
-        ctk.CTkLabel(tab, text="Emergency Recovery", font=ctk.CTkFont(size=20, weight="bold")).grid(row=0, column=0, pady=10)
+    def _show_recover_dialog(self) -> None:
+        """Opens a dialog for account recovery."""
+        dialog = ctk.CTkToplevel(self)
+        dialog.title("Recover Account")
+        dialog.geometry("400x400")
+        dialog.resizable(False, False)
+        dialog.grid_columnconfigure(0, weight=1)
 
-        self.login_recovery_key = ctk.CTkEntry(tab, placeholder_text="Recovery Key (24-chars)", width=300)
-        self.login_recovery_key.grid(row=1, column=0, pady=5)
+        ctk.CTkLabel(dialog, text="Emergency Recovery", font=ctk.CTkFont(size=18, weight="bold")).grid(row=0, column=0, pady=20)
 
-        self.login_recover_pass = ctk.CTkEntry(tab, placeholder_text="New Master Password", show="*", width=300)
-        self.login_recover_pass.grid(row=2, column=0, pady=5)
+        key_entry = ctk.CTkEntry(dialog, placeholder_text="Recovery Key", width=300)
+        key_entry.grid(row=1, column=0, pady=10)
+        
+        new_entry = ctk.CTkEntry(dialog, placeholder_text="New Master Password", show="*", width=300)
+        new_entry.grid(row=2, column=0, pady=10)
 
-        self.recover_caps_warn = ctk.CTkLabel(tab, text="⚠️ Caps Lock is ON", text_color="orange")
-        self.recover_lang_warn = ctk.CTkLabel(tab, text="Please switch keyboard to English layout", text_color="red")
+        caps_warn = ctk.CTkLabel(dialog, text="⚠️ Caps Lock is ON", text_color="orange")
+        lang_warn = ctk.CTkLabel(dialog, text="Please switch keyboard to English layout", text_color="red")
+        
+        new_entry.bind("<KeyRelease>", lambda e: self._check_indicators(new_entry, caps_warn, lang_warn))
+        new_entry.bind("<FocusIn>", lambda e: self._check_indicators(new_entry, caps_warn, lang_warn))
 
-        self.login_recover_pass.bind("<KeyRelease>", lambda e: self._check_indicators(self.login_recover_pass, self.recover_caps_warn, self.recover_lang_warn))
-        self.login_recover_pass.bind("<FocusIn>", lambda e: self._check_indicators(self.login_recover_pass, self.recover_caps_warn, self.recover_lang_warn))
+        show_var = tk.BooleanVar(value=False)
+        ctk.CTkCheckBox(dialog, text="Show Password", variable=show_var, 
+                        command=lambda: self._toggle_visibility(new_entry, show_var)).grid(row=5, column=0, pady=10)
 
-        self.recover_show_pass_var = tk.BooleanVar(value=False)
-        ctk.CTkCheckBox(tab, text="Show Password", variable=self.recover_show_pass_var, 
-                        command=lambda: self._toggle_visibility(self.login_recover_pass, self.recover_show_pass_var)).grid(row=5, column=0, pady=5)
+        def perform_recovery():
+            if not all([key_entry.get(), new_entry.get()]):
+                messagebox.showwarning("Warning", "All fields required.")
+                return
+            if DataManager.verify_recovery_key(key_entry.get()):
+                try:
+                    old_pass = DataManager.recover_master_password(key_entry.get())
+                    self.data_manager = DataManager(old_pass)
+                    self.data_manager.change_password(new_entry.get())
+                    dialog.destroy()
+                    self._setup_recovery_flow(reset_login=True)
+                except Exception as e:
+                    messagebox.showerror("Error", f"Recovery failed: {e}")
+            else:
+                messagebox.showerror("Error", "Invalid Recovery Key.")
 
-        ctk.CTkButton(tab, text="Reset & Generate New Key", command=self._handle_login_screen_recovery, width=200).grid(row=6, column=0, pady=10)
+        ctk.CTkButton(dialog, text="Reset & Generate Key", command=perform_recovery, width=200).grid(row=6, column=0, pady=20)
+        dialog.after(100, dialog.lift); dialog.focus(); dialog.grab_set()
 
     def _check_indicators(self, entry: ctk.CTkEntry, caps_label: ctk.CTkLabel, lang_label: ctk.CTkLabel) -> None:
         """Checks Caps Lock and Keyboard Layout states for a specific entry."""
