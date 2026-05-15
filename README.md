@@ -1,85 +1,64 @@
-# 🛡️ Secure Vault - Your Private Password Manager
+# Secure Password Manager
 
-![Python Version](https://img.shields.io/badge/python-3.12+-blue.svg)
-![Security](https://img.shields.io/badge/security-AES--256-green.svg)
-![UI](https://img.shields.io/badge/UI-CustomTkinter-blueviolet.svg)
+A modern, high-security password manager built with Python and CustomTkinter. This application features robust AES-256 encryption, a vertical simplified login system, and an emergency recovery architecture.
 
-**Secure Vault** is a lightweight, modern, and highly secure password manager built with Python. Designed with a security-first mindset, it ensures that your digital identity remains private and accessible only to you. No cloud, no third parties—just your data, encrypted on your machine.
+## 🚀 Key Features
 
----
+### 1. Smart Login System
+- **Compact UI:** A streamlined 350px height login screen for focused access.
+- **Caps Lock Indicator:** Real-time visual warning (⚠️) if Caps Lock is active.
+- **Language Layout Detection:** Detects non-English keyboard layouts to prevent accidental login failures.
+- **Integrated Show Password:** Toggle visibility directly within the entry field using a discrete eye icon.
 
-## Features
+### 2. Emergency Recovery Key System
+- **24-Character Recovery Key:** Automatically generated during account creation or password resets.
+- **Cryptographic Fingerprinting:** Uses SHA-256 hashing to verify recovery keys without storing the key itself.
+- **Encrypted Backup:** Your master password is encrypted using the recovery key as a secondary safety net.
+- **Auto-Sync:** A new recovery key is generated and displayed every time you change or recover your master password.
 
-### Uncompromising Security
-*   **Military-Grade Encryption:** Uses `AES-256` (via Fernet) to protect your credentials.
-*   **Advanced Key Derivation:** Your master password is never stored. We use `PBKDF2` with `SHA-256` and 480,000 iterations to derive your encryption key.
-*   **Embedded Salt Management:** Unlike many managers, we embed a 16-byte random salt directly into your encrypted data file for maximum portability and security.
-*   **Atomic Writes:** Prevents data corruption by ensuring your database is updated safely using temporary swap files.
+### 3. Master Password Management
+- **Direct Change/Recovery:** Perform master password updates or emergency resets directly from the login screen.
+- **Atomic Operations:** Ensures data integrity by using temp files and atomic replacement during encryption/decryption cycles.
 
-### Modern & Intuitive UI
-*   **CustomTkinter Interface:** A sleek, professional design that supports system-wide dark and light modes.
-*   **Tabbed Navigation:** Effortlessly switch between viewing your passwords, adding new ones, and generating secure keys.
-*   **Responsive Management:** Add, remove, and **edit** your credentials with a few clicks.
+### 4. Advanced Password Generator
+- **Guaranteed Presence:** Ensures at least one character from each selected category (Upper, Lower, Digits, Symbols) is present.
+- **Custom Symbol Support:** Input specific symbols you want to include, or enable "All Symbols" for full punctuation.
+- **Secure Shuffling:** Uses `secrets.SystemRandom` for high-entropy shuffling of generated strings.
 
-### Secure Password Generator
-*   **Customizable Complexity:** Generate unique passwords using a mix of uppercase letters, lowercase letters, numbers, and special symbols.
-*   **Adjustable Length:** Fine-tune your security requirements with a length slider (up to 64 characters).
-*   **Instant Clipboard:** Copy your newly generated password with a single click.
+## 🛠 Installation
 
----
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   cd "Password manager"
+   ```
 
-## Getting Started
+2. **Set up a virtual environment:**
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   ```
 
-### Prerequisites
-*   **Python 3.12+**
-*   **Libraries:** `customtkinter`, `cryptography`
+3. **Install dependencies:**
+   ```bash
+   pip install customtkinter cryptography
+   ```
 
-### Installation
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/yourusername/secure-vault.git
-    cd secure-vault
-    ```
-2.  **Install dependencies:**
-    ```bash
-    pip install customtkinter cryptography
-    ```
+## 🖥 Usage
 
-### Usage
-Run the application:
+Run the main application:
 ```bash
 python Password-manager.py
 ```
-Upon the first launch, you will set your **Master Password**. *Caution: If you lose this password, your data cannot be recovered.*
 
----
+### <span style="color:red">**Important Security Note**</span>
+<span style="color:red">**Save your Recovery Key!** In case you forget your Master Password, the 24-character key is the **only** way to recover your vault. If both are lost, your data cannot be decrypted.</span>
 
-## Technology Stack
-*   **GUI:** [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter) for a modern, native feel.
-*   **Encryption:** [Cryptography](https://cryptography.io/) for industry-standard security primitives.
-*   **Persistence:** Encrypted JSON-based flat file storage.
-*   **Testing:** Fully covered by `pytest` for reliability.
+## 🔒 Security Architecture
+- **Encryption:** AES-256 (Fernet) with PBKDF2HMAC key derivation.
+- **Salt:** Unique 16-byte salt per file to prevent rainbow table attacks.
+- **Hashing:** SHA-256 for integrity checks and recovery fingerprinting.
+- **Zero-Trust:** All decryption happens in RAM; unencrypted data is never written to disk.
 
----
-
-## Project Structure
-*   `Password-manager.py`: Main entry point and GUI logic.
-*   `crypto_manager.py`: Core encryption and key derivation services.
-*   `data_manager.py`: Secure data persistence and CRUD operations.
-*   `password_generator.py`: Secure random password generation logic.
-*   `test_*.py`: Comprehensive unit testing suite.
-
----
-
-## Security Note
-This project is designed for local-first privacy. Your `data.enc` file contains all your credentials in an encrypted state. Keep it safe, and never share your master password.
-
----
-
-## Contributing
-Contributions are welcome! If you find a bug or have a feature request, please open an issue or submit a pull request.
-
----
-
-## License
-This project is licensed under the MIT License.
+## 📄 License
+This project is for educational/personal use. Please ensure you follow security best practices when managing sensitive credentials.
