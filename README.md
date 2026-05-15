@@ -48,7 +48,7 @@ python Password-manager.py
 
 > [!CAUTION]
 > ### Important Security Note
-> **Save your Recovery Key!** In case you forget your Master Password, the 24-character key is the **only** way to > recover your vault. If both are lost, your data cannot be decrypted.
+> **Save your Recovery Key!** In case you forget your Master Password, the 24-character key is the **only** way to recover your vault. If both are lost, your data cannot be decrypted.
 
 ## Security Architecture
 - **Encryption:** AES-256 (Fernet) with PBKDF2HMAC key derivation.
