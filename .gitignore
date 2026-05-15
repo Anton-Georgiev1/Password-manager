@@ -220,4 +220,5 @@ __marimo__/
 salt.key
 *.enc
 data.enc
-
+recovery.enc
+recovery.hash
