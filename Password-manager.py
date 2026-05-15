@@ -518,13 +518,17 @@ class PasswordManagerApp(ctk.CTk):
         ctk.CTkCheckBox(form, text="Numbers", variable=self.num_var).grid(row=2, column=0, padx=10, pady=5, sticky="w")
 
         self.spec_var = tk.BooleanVar(value=True)
-        ctk.CTkCheckBox(form, text="Special Symbols", variable=self.spec_var).grid(row=2, column=1, padx=10, pady=5, sticky="w")
+        ctk.CTkCheckBox(form, text="All Symbols", variable=self.spec_var).grid(row=2, column=1, padx=10, pady=5, sticky="w")
+
+        ctk.CTkLabel(form, text="Custom Symbols:").grid(row=3, column=0, padx=10, pady=5, sticky="w")
+        self.custom_sym_entry = ctk.CTkEntry(form, placeholder_text="e.g. @#$%", width=150)
+        self.custom_sym_entry.grid(row=3, column=1, padx=10, pady=5, sticky="w")
 
         self.gen_pass_entry = ctk.CTkEntry(form, width=300, placeholder_text="Generated Password")
-        self.gen_pass_entry.grid(row=3, column=0, columnspan=3, padx=10, pady=20)
+        self.gen_pass_entry.grid(row=4, column=0, columnspan=3, padx=10, pady=20)
 
         btn_frame = ctk.CTkFrame(form, fg_color="transparent")
-        btn_frame.grid(row=4, column=0, columnspan=3, pady=10)
+        btn_frame.grid(row=5, column=0, columnspan=3, pady=10)
         
         ctk.CTkButton(btn_frame, text="Generate", command=self._generate_password, width=120).pack(side="left", padx=5)
         ctk.CTkButton(btn_frame, text="Copy", command=self._copy_to_clipboard, width=120).pack(side="left", padx=5)
@@ -535,7 +539,8 @@ class PasswordManagerApp(ctk.CTk):
             use_upper=self.up_var.get(),
             use_lower=self.low_var.get(),
             use_digits=self.num_var.get(),
-            use_special=self.spec_var.get()
+            use_special=self.spec_var.get(),
+            custom_symbols=self.custom_sym_entry.get()
         )
         try:
             pwd = PasswordGenerator.generate(settings)
