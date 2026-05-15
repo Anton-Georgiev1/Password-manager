@@ -46,7 +46,7 @@ Run the main application:
 python Password-manager.py
 ```
 
-### <span style="color:red">Important Security Note</span>
+ ### <span style="color:red">Important Security Note</span>
 <span style="color:red">**Save your Recovery Key!** In case you forget your Master Password, the 24-character key is the **only** way to recover your vault. If both are lost, your data cannot be decrypted.</span>
 
 ## Security Architecture
