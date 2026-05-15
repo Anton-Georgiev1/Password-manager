@@ -16,12 +16,12 @@ class EditDialog(ctk.CTkToplevel):
     def __init__(self, parent, website, username, password, on_save):
         super().__init__(parent)
         self.title("Edit Credential")
-        self.geometry("400x300")
+        self.geometry("400x350")
         self.resizable(False, False)
         self.on_save = on_save
 
         self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure((0, 1, 2, 3), weight=1)
+        self.grid_rowconfigure((0, 1, 2, 3, 4), weight=1)
 
         self.site_entry = ctk.CTkEntry(self, placeholder_text="Website", width=300)
         self.site_entry.insert(0, website)
@@ -31,17 +31,28 @@ class EditDialog(ctk.CTkToplevel):
         self.user_entry.insert(0, username)
         self.user_entry.grid(row=1, column=0, padx=20, pady=10)
 
-        self.pass_entry = ctk.CTkEntry(self, placeholder_text="Password", width=300)
+        self.pass_entry = ctk.CTkEntry(self, placeholder_text="Password", show="*", width=300)
         self.pass_entry.insert(0, password)
         self.pass_entry.grid(row=2, column=0, padx=20, pady=10)
 
+        self.show_pass_var = tk.BooleanVar(value=False)
+        self.show_pass_check = ctk.CTkCheckBox(self, text="Show Password", variable=self.show_pass_var, command=self._toggle_password)
+        self.show_pass_check.grid(row=3, column=0, pady=5)
+
         self.save_btn = ctk.CTkButton(self, text="Save Changes", command=self._save)
-        self.save_btn.grid(row=3, column=0, padx=20, pady=20)
+        self.save_btn.grid(row=4, column=0, padx=20, pady=20)
 
         # Force focus
         self.after(100, self.lift)
         self.focus()
         self.grab_set()
+
+    def _toggle_password(self):
+        """Toggles visibility of the password."""
+        if self.show_pass_var.get():
+            self.pass_entry.configure(show="")
+        else:
+            self.pass_entry.configure(show="*")
 
     def _save(self):
         site = self.site_entry.get()
@@ -77,7 +88,7 @@ class PasswordManagerApp(ctk.CTk):
         self.login_frame = ctk.CTkFrame(self)
         self.login_frame.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
         self.login_frame.grid_columnconfigure(0, weight=1)
-        self.login_frame.grid_rowconfigure((0, 1, 2, 3), weight=1)
+        self.login_frame.grid_rowconfigure((0, 1, 2, 3, 4), weight=1)
 
         ctk.CTkLabel(self.login_frame, text="Secure Vault", font=ctk.CTkFont(size=24, weight="bold")).grid(row=0, column=0, pady=20)
         
@@ -85,8 +96,19 @@ class PasswordManagerApp(ctk.CTk):
         self.master_pass_entry.grid(row=1, column=0, pady=10)
         self.master_pass_entry.bind("<Return>", lambda e: self._handle_login())
 
+        self.show_pass_var = tk.BooleanVar(value=False)
+        self.show_pass_check = ctk.CTkCheckBox(self.login_frame, text="Show Password", variable=self.show_pass_var, command=self._toggle_login_password)
+        self.show_pass_check.grid(row=2, column=0, pady=5)
+
         self.login_btn = ctk.CTkButton(self.login_frame, text="Login", command=self._handle_login, width=200)
-        self.login_btn.grid(row=2, column=0, pady=20)
+        self.login_btn.grid(row=3, column=0, pady=20)
+
+    def _toggle_login_password(self) -> None:
+        """Toggles visibility of the master password."""
+        if self.show_pass_var.get():
+            self.master_pass_entry.configure(show="")
+        else:
+            self.master_pass_entry.configure(show="*")
 
     def _handle_login(self) -> None:
         password = self.master_pass_entry.get()
@@ -201,11 +223,22 @@ class PasswordManagerApp(ctk.CTk):
         self.user_entry = ctk.CTkEntry(form, placeholder_text="Username", width=300)
         self.user_entry.grid(row=1, column=0, padx=20, pady=10)
 
-        self.pass_entry = ctk.CTkEntry(form, placeholder_text="Password", width=300)
+        self.pass_entry = ctk.CTkEntry(form, placeholder_text="Password", show="*", width=300)
         self.pass_entry.grid(row=2, column=0, padx=20, pady=10)
 
+        self.show_add_pass_var = tk.BooleanVar(value=False)
+        self.show_add_pass_check = ctk.CTkCheckBox(form, text="Show Password", variable=self.show_add_pass_var, command=self._toggle_add_password)
+        self.show_add_pass_check.grid(row=3, column=0, pady=5)
+
         self.add_btn = ctk.CTkButton(form, text="Add Credential", command=self._add_credential, width=200)
-        self.add_btn.grid(row=3, column=0, padx=20, pady=20)
+        self.add_btn.grid(row=4, column=0, padx=20, pady=10)
+
+    def _toggle_add_password(self) -> None:
+        """Toggles visibility of the add credential password."""
+        if self.show_add_pass_var.get():
+            self.pass_entry.configure(show="")
+        else:
+            self.pass_entry.configure(show="*")
 
     def _add_credential(self) -> None:
         site = self.site_entry.get()
