@@ -74,7 +74,7 @@ class PasswordManagerApp(ctk.CTk):
 
     def __init__(self) -> None:
         super().__init__()
-        self.title("Secure Password Manager")
+        self.title("Password Manager")
         self.geometry("600x500")
         self.resizable(False, False)
 
@@ -88,6 +88,7 @@ class PasswordManagerApp(ctk.CTk):
 
     def _show_login(self) -> None:
         """Displays a simplified, vertical login screen."""
+        self.geometry("600x350")
         self.login_container = ctk.CTkFrame(self)
         self.login_container.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
         self.login_container.grid_columnconfigure(0, weight=1)
@@ -361,6 +362,7 @@ class PasswordManagerApp(ctk.CTk):
             messagebox.showerror("Error", f"An error occurred: {e}")
 
     def _setup_main_ui(self) -> None:
+        self.geometry("600x500")
         self.tabview = ctk.CTkTabview(self)
         self.tabview.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
 
