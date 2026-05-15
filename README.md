@@ -1,12 +1,12 @@
-# Secure Password Manager
+# Password Manager
 
 A modern, high-security password manager built with Python and CustomTkinter. This application features robust AES-256 encryption, a vertical simplified login system, and an emergency recovery architecture.
 
-## 🚀 Key Features
+## Key Features
 
 ### 1. Smart Login System
 - **Compact UI:** A streamlined 350px height login screen for focused access.
-- **Caps Lock Indicator:** Real-time visual warning (⚠️) if Caps Lock is active.
+- **Caps Lock Indicator:** Real-time visual warning if Caps Lock is active.
 - **Language Layout Detection:** Detects non-English keyboard layouts to prevent accidental login failures.
 - **Integrated Show Password:** Toggle visibility directly within the entry field using a discrete eye icon.
 
@@ -25,14 +25,9 @@ A modern, high-security password manager built with Python and CustomTkinter. Th
 - **Custom Symbol Support:** Input specific symbols you want to include, or enable "All Symbols" for full punctuation.
 - **Secure Shuffling:** Uses `secrets.SystemRandom` for high-entropy shuffling of generated strings.
 
-## 🛠 Installation
+## Installation
 
 1. **Clone the repository:**
-   ```bash
-   git clone <repository-url>
-   cd "Password manager"
-   ```
-
 2. **Set up a virtual environment:**
    ```bash
    python -m venv .venv
@@ -44,21 +39,21 @@ A modern, high-security password manager built with Python and CustomTkinter. Th
    pip install customtkinter cryptography
    ```
 
-## 🖥 Usage
+## Usage
 
 Run the main application:
 ```bash
 python Password-manager.py
 ```
 
-### <span style="color:red">**Important Security Note**</span>
-<span style="color:red">**Save your Recovery Key!** In case you forget your Master Password, the 24-character key is the **only** way to recover your vault. If both are lost, your data cannot be decrypted.</span>
+### Important Security Note
+$\color{red}{\textbf{Save your Recovery Key!}\text{ In case you forget your Master Password, the 24-character key is the only way to recover your vault. If both are lost, your data cannot be decrypted.}}$
 
-## 🔒 Security Architecture
+## Security Architecture
 - **Encryption:** AES-256 (Fernet) with PBKDF2HMAC key derivation.
 - **Salt:** Unique 16-byte salt per file to prevent rainbow table attacks.
 - **Hashing:** SHA-256 for integrity checks and recovery fingerprinting.
 - **Zero-Trust:** All decryption happens in RAM; unencrypted data is never written to disk.
 
-## 📄 License
+## License
 This project is for educational/personal use. Please ensure you follow security best practices when managing sensitive credentials.
